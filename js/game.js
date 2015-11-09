@@ -8,24 +8,24 @@ window.onload = function() {
 // Global variables
 var score = -1;
 var currentActor = '';
-var main = document.getElementById('main');
+var container = document.getElementById('movie-container');
 var moviesUsed = [];
 
 function startGame() {
-  main.innerHTML = ''; // Remove current content
+  container.innerHTML = ''; // Remove current content
   var heading = document.createElement('h1');
   heading.innerHTML = 'Give me any movie to get started.';
-  main.appendChild(heading);
+  container.appendChild(heading);
   var text = document.createElement('p');
   text.className = 'lead';
   text.innerHTML = 'Pro tip: it helps if you&rsquo;re familiar with the cast.';
-  main.appendChild(text);
+  container.appendChild(text);
   var movieInput = document.createElement('input');
   movieInput.id = "movie-search";
   movieInput.type = 'text';
   movieInput.placeholder = 'Enter your movie here.';
   movieInput.addEventListener( 'keyup' , getMovie , false );
-  main.appendChild(movieInput);
+  container.appendChild(movieInput);
 } // End of startGame
 
 // Capture input, query OMBD, respond accordingly
@@ -102,8 +102,6 @@ function Movie( data , isCorrect ) {
     this.cast = data.Actors;
   }
   this.initialize = function() {
-    this.display = document.createElement('div');
-    this.display.id = 'movie-container';
     if(this.posterURL != 'N/A') {
       this.img = document.createElement('img');
       this.img.src = this.posterURL;
@@ -142,16 +140,15 @@ function Movie( data , isCorrect ) {
     this.showScore.innerHTML = 'Current score: ' + score;
   }
   this.render = function() {
+    container.innerHTML = ''; // Empty container
     if(this.posterURL != 'N/A') {
-      this.display.appendChild(this.img);
+      container.appendChild(this.img);
     }
-    this.display.appendChild(this.heading);
-    this.display.appendChild(this.comment);
-    this.display.appendChild(this.actor);
-    this.display.appendChild(this.movieInput);
-    this.display.appendChild(this.showScore);
-    main.innerHTML = '';
-    main.appendChild(this.display);
+    container.appendChild(this.heading);
+    container.appendChild(this.comment);
+    container.appendChild(this.actor);
+    container.appendChild(this.movieInput);
+    container.appendChild(this.showScore);
   }
 } // End of Movie constructor
 
