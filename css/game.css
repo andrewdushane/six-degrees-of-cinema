@@ -149,7 +149,7 @@ body {
   width: 100%;
 }
 
-#error {
+#error, .red-text {
   color: red;
 }
 

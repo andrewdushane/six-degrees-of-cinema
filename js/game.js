@@ -94,7 +94,8 @@ function Movie( data , isCorrect ) {
   this.title = data.Title;
   this.posterURL = data.Poster;
   this.rating = data.tomatoMeter;
-  if(isCorrect) {
+  this.correct = isCorrect;
+  if(this.correct) {
     this.cast = data.Actors.split( ', ');
     this.randomActor = getRandomActor(this.cast);
     currentActor = this.randomActor;
@@ -125,10 +126,14 @@ function Movie( data , isCorrect ) {
     if( score > 0 ) {
       also = ' also';
     }
-    if(isCorrect) {
+    if(this.correct) {
       this.actor.innerHTML = this.randomActor + also + ' stars in this movie. Name another movie in which ' + this.randomActor + ' has a starring role.';
     } else {
+      this.actor.className += ' red-text';
       this.actor.innerHTML = 'Sorry, ' + currentActor + ' does not have a leading role in that movie. The official cast is ' + this.cast + '.';
+      this.newGamePrompt = document.createElement('p');
+      this.newGamePrompt.className = 'lead';
+      this.newGamePrompt.innerHTML = 'Want to try again? Enter a new movie and go for it!'
     }
     this.movieInput = document.createElement('input');
     this.movieInput.id = "movie-search";
@@ -137,7 +142,11 @@ function Movie( data , isCorrect ) {
     this.movieInput.addEventListener( 'keyup' , getMovie , false );
     this.showScore = document.createElement('p');
     this.showScore.className = 'lead';
-    this.showScore.innerHTML = 'Current score: ' + score;
+    if(this.correct) {
+      this.showScore.innerHTML = 'Current score: ' + score;
+    } else {
+      this.showScore.innerHTML = 'Your final score was: ' + score;
+    }
   }
   this.render = function() {
     container.innerHTML = ''; // Empty container
@@ -147,6 +156,10 @@ function Movie( data , isCorrect ) {
     container.appendChild(this.heading);
     container.appendChild(this.comment);
     container.appendChild(this.actor);
+    if(!(this.correct)) {
+      container.appendChild(this.newGamePrompt);
+      resetGame();
+    }
     container.appendChild(this.movieInput);
     container.appendChild(this.showScore);
   }
@@ -194,3 +207,10 @@ function getRandomActor(cast) {
   }
   return newCast[Math.floor(Math.random()*(cast.length))]; // Pick random actor
 } // End of getRandomActor
+
+// Reset global variables to start game over
+function resetGame() {
+  score = -1;
+  currentActor = '';
+  moviesUsed = [];
+}
