@@ -283,7 +283,7 @@ function Movie( data , isCorrect ) {
       }
     }
     else {
-      this.showScore.innerHTML = 'Player 1:&nbsp;' + playerOneScore + '<br>Player 2:&nbsp;' + playerTwoScore;
+      this.showScore.innerHTML = '<span class="light-grey-text">Player 1:</span>&nbsp;' + playerOneScore + '<br><span class="light-grey-text">Player 2:</span>&nbsp;' + playerTwoScore;
       if( this.correct ) {
         var scoreState = 'Current Scores';
       } else {
