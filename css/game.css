@@ -34,6 +34,7 @@ h1 {
   color: #4682B4;
   margin-bottom: 0.4em;
   font-size: 2.5em;
+  font-weight: 400;
 }
 .h1, .h2, .h3, h1, h2, h3 {
     margin-top: 0;
@@ -231,7 +232,7 @@ body {
     width: 31.33%;
     margin-right: 3%;
     float: left;
-    min-height: 300px;
+    min-height: 365px;
   }
   #movie-container div:nth-child(3n+4) {
     margin-right: 0;
