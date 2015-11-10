@@ -8,8 +8,8 @@ window.onload = function() {
 // Global variables
 var score = -1;
 var currentActor = '';
-var container = document.getElementById('movie-container');
 var moviesUsed = [];
+var container = document.getElementById('movie-container');
 
 function startGame() {
   container.innerHTML = ''; // Remove current content
@@ -24,9 +24,40 @@ function startGame() {
   movieInput.id = "movie-search";
   movieInput.type = 'text';
   movieInput.placeholder = 'Enter your movie here.';
-  movieInput.addEventListener( 'keyup' , getMovie , false );
+  movieInput.addEventListener( 'keyup' , searchMovies , false );
   container.appendChild(movieInput);
 } // End of startGame
+
+
+// Query OMDB and get list of movies matching search
+function searchMovies(e) {
+  if( e.keyCode === 13 ) {
+    var query = e.target.value;
+    var movieQuery = {
+      url: 'http://www.omdbapi.com/?',
+      type: 'GET',
+      data: {
+        s: query,
+      },
+      dataType: 'json',
+      success: function(data) {
+        var movieList = new MovieList(data);
+      },
+      error: function(data) {
+        var notFound = 'We didn&rsquo;nt find any movies that match your search. Try a different spelling.';
+        var notFoundError = new Error( notFound );
+        notFoundError.initialize();
+        notFoundError.render();
+      }
+    }
+    $.ajax(movieQuery);
+  }
+} // End of searh movies
+
+function getMovieTemp(e) {
+  console.log('getMovieTemp event data:');
+  console.log(e);
+}
 
 // Capture input, query OMBD, respond accordingly
 function getMovie(e) {
@@ -87,6 +118,58 @@ function getMovie(e) {
     $.ajax(movieQuery);
   }
 } // End of getMovie
+
+
+// Movies parent class constructor
+var Movies = function(movie) {
+  this.title = movie.Title;
+  this.posterURL = movie.Poster;
+  if(this.posterURL != 'N/A') {
+    this.img = document.createElement('img');
+    this.img.src = this.posterURL;
+  }
+  this.heading = document.createElement('h1');
+  this.heading.innerHTML = this.title;
+}
+
+var MovieListItem = function(movie) {
+  Movies.call(this, movie); // inherit properties and methods of Movies
+  this.searchID = movie.imdbID;
+  this.year = movie.Year;
+  this.initialize = function() {
+    this.wrapper = document.createElement('div');
+    this.wrapper.id = this.searchID;
+    this.date = document.createElement('p');
+    this.date.innerHTML = this.year;
+  }
+  this.render = function() {
+    if(this.hasOwnProperty('img')) {
+      this.wrapper.appendChild(this.img);
+    }
+    this.wrapper.appendChild(this.heading);
+    this.wrapper.appendChild(this.date);
+    this.wrapper.addEventListener( 'click', getMovieTemp, false );
+    container.appendChild(this.wrapper);
+  }
+} // End of MovieListItem constructor
+MovieListItem.prototype = Object.create(Movies.prototype); // MovieListItem extends Movies
+
+
+// Display movies by creating a MovieListItem for each search result
+MovieList = function(data) {
+  if(data.hasOwnProperty('Search')) {
+    var movies = data.Search;
+    container.innerHTML = '';
+    var listHeading = document.createElement('h1');
+    listHeading.innerHTML = 'Which movie did you have in mind?';
+    container.appendChild(listHeading);
+    for( var i = 0; i < movies.length - 1; i++ ) { //Last object in search is not a movie
+      var displayMovie = new MovieListItem( movies[i] );
+      displayMovie.initialize();
+      displayMovie.render();
+    }
+  }
+} // End of MovieList
 
 // Movie object constructor
 function Movie( data , isCorrect ) {
