@@ -19,7 +19,7 @@ var container = document.getElementById('movie-container');
 
 // Global error messages
 var notFound = 'I didn&rsquo;t find any movies that match your search. Try a different spelling.';
-var sameMovie = 'Looks like that movie&rsquo;s already been used.';
+var sameMovie = 'Looks like that movie&rsquo;s already been used. Pick a different movie, or try searching again.';
 var noMovie = 'I wasn&rsquo;t able to find that movie. Try a different spelling.';
 var badConnection = 'There may be a problem with your connection. Please verify you&rsquo;re connected to the internet and try again.';
 
@@ -39,11 +39,7 @@ function startGame(e) {
   text.className = 'lead';
   text.innerHTML = 'Pro tip: it helps if you&rsquo;re familiar with the cast.';
   container.appendChild(text);
-  var movieInput = document.createElement('input');
-  movieInput.id = "movie-search";
-  movieInput.type = 'text';
-  movieInput.placeholder = 'Enter your movie here.';
-  movieInput.addEventListener( 'keyup' , searchMovies , false );
+  movieInput = makeSearchInput();
   container.appendChild(movieInput);
   movieInput.focus();
 } // End of startGame
@@ -57,7 +53,7 @@ function searchMovies(e) {
       url: 'http://www.omdbapi.com/?',
       type: 'GET',
       data: {
-        s: query,
+        s: query
       },
       dataType: 'json',
       success: function(data) {
@@ -201,6 +197,7 @@ MovieList = function(data) {
     var movies = data.Search;
     container.innerHTML = '';
     var listHeading = document.createElement('h1');
+    listHeading.id = 'movie-list-title';
     listHeading.innerHTML = 'Which movie did you have in mind?';
     container.appendChild(listHeading);
     for( var i = 0; i < movies.length; i++ ) {
@@ -247,7 +244,8 @@ function Movie( data , isCorrect ) {
     else {
       return 'Meh, that movie was ok.';
     }
-  }
+  } // End of getSnarky
+
   this.textContent = function() {
     var also = '';
     if( score > 0 ) {
@@ -265,7 +263,6 @@ function Movie( data , isCorrect ) {
         this.actor.innerHTML = '<strong>' + player + ':</strong> ' + this.actor.innerHTML;
       }
     }
-
     else {
       this.actor.className += ' red-text';
       this.actor.innerHTML = 'Sorry, ' + currentActor + ' does not have a leading role in that movie. The official cast is ' + this.cast + '.';
@@ -273,7 +270,8 @@ function Movie( data , isCorrect ) {
       this.newGamePrompt.className = 'lead';
       this.newGamePrompt.innerHTML = 'Want to try again? Enter a new movie and go for it!'
     }
-  }
+  } // end of textContent
+
   this.scoresOutput = function() {
     if( !twoPlayer ) {
       if(this.correct) {
@@ -291,7 +289,8 @@ function Movie( data , isCorrect ) {
       }
       this.showScore.innerHTML = '<strong>' + scoreState + '</strong><br>' + this.showScore.innerHTML;
     }
-  }
+  } // End of scoresOutput
+
   this.initialize = function() {
     this.comment = document.createElement('p');
     this.comment.className = 'lead';
@@ -307,7 +306,8 @@ function Movie( data , isCorrect ) {
     this.showScore = document.createElement('p');
     this.showScore.className = 'lead';
     this.scoresOutput();
-  }
+  } // End of initliaze
+
   this.render = function() {
     container.innerHTML = ''; // Empty container
     container.appendChild(this.img);
@@ -321,7 +321,8 @@ function Movie( data , isCorrect ) {
     container.appendChild(this.movieInput);
     this.movieInput.focus();
     container.appendChild(this.showScore);
-  }
+  } // End of render
+
 } // End of Movie constructor
 Movie.prototype = Object.create(Movies.prototype);
 
@@ -341,9 +342,18 @@ function Error( message ) {
       var errorMessage = document.getElementById('error');
     }
     errorMessage.innerHTML = this.message;
-    var input = document.getElementById('movie-search');
-    var parent = input.parentNode;
-    parent.insertBefore( errorMessage , input );
+    if( this.message == sameMovie ) {
+      var element = container.getElementsByTagName('div')[0];
+      var movieInput = makeSearchInput();
+    }
+    else {
+      var element = document.getElementById('movie-search');
+    }
+    var parent = element.parentNode;
+    parent.insertBefore( errorMessage , element );
+    if( movieInput != undefined ) {
+      parent.insertBefore( movieInput, element );
+    }
   }
 } // End of Error constructor
 
@@ -365,4 +375,14 @@ function resetGame() {
   currentPlayer = 1;
   playerOneScore = -1;
   playerTwoScore = 0;
+}
+
+// Make input element for searching movies
+function makeSearchInput() {
+  var movieInput = document.createElement('input');
+  movieInput.id = "movie-search";
+  movieInput.type = 'text';
+  movieInput.placeholder = 'Enter your movie here.';
+  movieInput.addEventListener( 'keyup' , searchMovies , false );
+  return movieInput;
 }

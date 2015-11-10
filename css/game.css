@@ -23,6 +23,10 @@ a:hover {
   border: 1px solid #fff;
 }
 
+.btn-default:hover, .btn-defult:focus {
+  background-color: #335d81;
+}
+
 input {
   padding: 1em;
   border: 1px solid #333;
