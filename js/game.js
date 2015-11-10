@@ -11,6 +11,13 @@ var currentActor = '';
 var moviesUsed = [];
 var container = document.getElementById('movie-container');
 
+// Global error messages
+var notFound = 'We didn&rsquo;t find any movies that match your search. Try a different spelling.';
+var sameMovie = 'Looks like you&rsquo;ve already used that movie.';
+var noMovie = 'We weren&rsquo;t able to find that movie. Try a different spelling.';
+var badConnection = 'There may be a problem with your connection. Please verify you\'re connected to the internet and try again.';
+
+
 function startGame() {
   container.innerHTML = ''; // Remove current content
   var heading = document.createElement('h1');
@@ -41,10 +48,17 @@ function searchMovies(e) {
       },
       dataType: 'json',
       success: function(data) {
-        var movieList = new MovieList(data);
+        console.log('Successful searchMovies query');
+        if( data.hasOwnProperty('Search') ) {
+          console.log(data.Search);
+          var movieList = new MovieList(data);
+        } else {
+          var notFoundError = new Error( notFound );
+          notFoundError.initialize();
+          notFoundError.render();
+        }
       },
       error: function(data) {
-        var notFound = 'We didn&rsquo;nt find any movies that match your search. Try a different spelling.';
         var notFoundError = new Error( notFound );
         notFoundError.initialize();
         notFoundError.render();
@@ -57,66 +71,62 @@ function searchMovies(e) {
 function getMovieTemp(e) {
   console.log('getMovieTemp event data:');
   console.log(e);
+  console.log(e.srcElement.parentNode.id);
 }
 
 // Capture input, query OMBD, respond accordingly
 function getMovie(e) {
-  if( e.keyCode === 13 ) {
-    var query = e.target.value;
-    var movieQuery = {
-      url: 'http://www.omdbapi.com/?',
-      type: 'GET',
-      data: {
-        t: query,
-        tomatoes: 'true'
-      },
-      dataType: 'json',
-      success: function(data) {
-        if( data.Response == 'True' ) {
-          var title = data.Title;
-          for( i in moviesUsed ) {
-            if ( data.Title == moviesUsed[i] ) {
-              var sameMovie = 'Looks like you&rsquo;ve already used that movie.';
-              var sameMovieError = new Error( sameMovie );
-              sameMovieError.initialize();
-              sameMovieError.render();
-              return;
-            }
+  var query = e.srcElement.parentNode.id;
+  var movieQuery = {
+    url: 'http://www.omdbapi.com/?',
+    type: 'GET',
+    data: {
+      i: query,
+      tomatoes: 'true'
+    },
+    dataType: 'json',
+    success: function(data) {
+      if( data.Response == 'True' ) {
+        var title = data.Title;
+        for( i in moviesUsed ) {
+          if ( data.Title == moviesUsed[i] ) {
+            var sameMovieError = new Error( sameMovie );
+            sameMovieError.initialize();
+            sameMovieError.render();
+            return;
           }
-          var newActors = data.Actors.split( ', ' );
-          var isCorrect = true;
-          if( score > -1 ) {
-            isCorrect = checkActors(newActors);
-          }
-          if( isCorrect ) {
-            moviesUsed.push( title );
-            score++;
-            var movie = new Movie( data , isCorrect ); // Display new movie
-            movie.initialize();
-            movie.render();
-          }
-          else {
-            var movie = new Movie( data , isCorrect );
-            movie.initialize();
-            movie.render();
-          }
+        }
+        var newActors = data.Actors.split( ', ' );
+        var isCorrect = true;
+        if( score > -1 ) {
+          isCorrect = checkActors(newActors);
+        }
+        if( isCorrect ) {
+          moviesUsed.push( title );
+          score++;
+          var movie = new Movie( data , isCorrect ); // Display new movie
+          movie.initialize();
+          movie.render();
         }
         else {
-          var notFound = 'We weren&rsquo;t able to find that movie. Try a different spelling.';
-          var notFoundError = new Error( notFound );
-          notFoundError.initialize();
-          notFoundError.render();
+          var movie = new Movie( data , isCorrect );
+          movie.initialize();
+          movie.render();
         }
-      },
-      error: function(data) {
-        var badConnection = 'There may be a problem with your connection. Please verify you\'re connected to the internet and try again.';
-        var connectionError = new Error( badConnection );
-        connectionError.initialize();
-        connectionError.render();
       }
+      else {
+        var noMovieError = new Error( noMovie );
+        notFoundError.initialize();
+        notFoundError.render();
+      }
+    },
+    error: function(data) {
+      var connectionError = new Error( badConnection );
+      connectionError.initialize();
+      connectionError.render();
     }
-    $.ajax(movieQuery);
   }
+  $.ajax(movieQuery);
 } // End of getMovie
 
 
@@ -124,9 +134,11 @@ function getMovie(e) {
 var Movies = function(movie) {
   this.title = movie.Title;
   this.posterURL = movie.Poster;
+  this.img = document.createElement('img');
   if(this.posterURL != 'N/A') {
-    this.img = document.createElement('img');
     this.img.src = this.posterURL;
+  } else {
+    this.img.src = 'images/no-poster-available.png'
   }
   this.heading = document.createElement('h1');
   this.heading.innerHTML = this.title;
@@ -148,7 +160,7 @@ var MovieListItem = function(movie) {
     }
     this.wrapper.appendChild(this.heading);
     this.wrapper.appendChild(this.date);
-    this.wrapper.addEventListener( 'click', getMovieTemp, false );
+    this.wrapper.addEventListener( 'click', getMovie, false );
     container.appendChild(this.wrapper);
   }
 } // End of MovieListItem constructor
@@ -222,7 +234,7 @@ function Movie( data , isCorrect ) {
     this.movieInput.id = "movie-search";
     this.movieInput.type = 'text';
     this.movieInput.placeholder = 'Enter your movie here.';
-    this.movieInput.addEventListener( 'keyup' , getMovie , false );
+    this.movieInput.addEventListener( 'keyup', searchMovies, false );
     this.showScore = document.createElement('p');
     this.showScore.className = 'lead';
     if(this.correct) {
