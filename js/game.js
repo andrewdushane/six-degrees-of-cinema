@@ -168,13 +168,24 @@ var Movies = function(movie) {
   this.heading.innerHTML = this.title;
 }
 
-var MovieListItem = function(movie) {
+var MovieListItem = function(movie , i) {
   Movies.call(this, movie); // inherit properties and methods of Movies
   this.searchID = movie.imdbID;
   this.year = movie.Year;
   this.initialize = function() {
     this.wrapper = document.createElement('div');
     this.wrapper.id = this.searchID;
+    if(((i + 1 ) % 3) == 0 ) {
+      this.wrapper.className = 'third-item';
+    }
+    if( i % 2 != 0 ) {
+      if(((i + 1 ) % 3) == 0 ) {
+        this.wrapper.className += ' even-item'
+      }
+      else {
+        this.wrapper.className = 'even-item';
+      }
+    }
     this.date = document.createElement('p');
     this.date.innerHTML = this.year;
   }
@@ -201,7 +212,7 @@ MovieList = function(data) {
     listHeading.innerHTML = 'Which movie did you have in mind?';
     container.appendChild(listHeading);
     for( var i = 0; i < movies.length; i++ ) {
-      var displayMovie = new MovieListItem( movies[i] );
+      var displayMovie = new MovieListItem( movies[i] , i );
       displayMovie.initialize();
       displayMovie.render();
     }

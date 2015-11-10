@@ -118,15 +118,6 @@ body {
   border-bottom-color: #fff;
 }
 
-@media (min-width: 768px) {
-  .masthead-brand {
-    float: left;
-  }
-  .masthead-nav {
-    float: right;
-  }
-}
-
 /*
  * Cover
  */
@@ -187,13 +178,37 @@ body {
   color: rgba(255,255,255,.5);
 }
 
+@media (min-width: 500px) {
+  #movie-container > img {
+    width: 48%;
+    margin-right: 2%;
+    float: left;
+  }
+  #movie-container input {
+    width: 50%;
+  }
+  #movie-container div {
+    width: 49%;
+    float: left;
+    margin-right: 2%;
+  }
+  #movie-container div.even-item {
+    margin-right: 0;
+  }
+  #movie-container div img {
+    height: auto;
+  }
+}
 
-/*
- * Affix and center
- */
 
-@media (min-width: 768px) {
+@media (min-width: 800px) {
   /* Pull out the header and footer */
+  .masthead-brand {
+    float: left;
+  }
+  .masthead-nav {
+    float: right;
+  }
   .inner.cover {
     overflow: hidden;
   }
@@ -220,8 +235,6 @@ body {
     min-height: 442px;
     width: 100%;
     padding: 20px;
-    border: 2px solid #AAA;
-    border-radius: 5px;
     text-align: left;
     margin: 3% auto;
   }
@@ -244,7 +257,10 @@ body {
     float: left;
     min-height: 365px;
   }
-  #movie-container div:nth-child(3n+4) {
+  #movie-container div.even-item {
+    margin-right: 3%;
+  }
+  #movie-container div.third-item {
     margin-right: 0;
   }
   #movie-container div img {
@@ -252,9 +268,6 @@ body {
     width: 100%;
     margin: 0;
   }
-}
-
-@media (min-width: 800px) {
   .masthead,
   .mastfoot,
   .cover-container {
