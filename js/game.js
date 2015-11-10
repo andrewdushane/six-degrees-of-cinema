@@ -245,16 +245,21 @@ function Movie( data , isCorrect ) {
     this.cast = data.Actors;
   }
 
+  // Comment on given movie based on Rotten Tomatoes rating
   this.getSnarky = function() {
-    if( this.rating >= 80 ) {
-      return 'Nice pick.';
+    if(this.rating >= 93) {
+      var comments = ['Classic!', 'Great film.', 'Excellent.'];
     }
-    else if( this.rating < 80 && this.rating >= 60 ) {
-      return 'Decent flick.';
+    else if( this.rating < 93 && this.rating >= 75 ) {
+      var comments = ['Nice pick.', 'Good movie.', 'That&rsquo;ll work.'];
+    }
+    else if( this.rating < 80 && this.rating >= 55 ) {
+      var comments = ['Decent flick.', 'Not horrible.', 'Please don&rsquo;t Netflix and Chill with that movie.'];
     }
     else {
-      return 'Meh, that movie was ok.';
+      var comments = ['Meh, that movie was ok.', 'Did you enjoy that movie?', 'That is, technically, a movie.'];
     }
+    return comments[Math.floor(Math.random()*3)]
   } // End of getSnarky
 
   this.textContent = function() {
