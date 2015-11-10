@@ -237,12 +237,10 @@ function Movie( data , isCorrect ) {
     return newCast[Math.floor(Math.random()*(newCast.length))]; // Pick random actor
   } // End of getRandomActor
 
+  this.cast = data.Actors.split( ', ');
   if(this.correct) {
-    this.cast = data.Actors.split( ', ');
     this.randomActor = this.getRandomActor();
     currentActor = this.randomActor;
-  } else {
-    this.cast = data.Actors;
   }
 
   // Comment on given movie based on Rotten Tomatoes rating
@@ -281,7 +279,17 @@ function Movie( data , isCorrect ) {
     }
     else {
       this.actor.className += ' red-text';
-      this.actor.innerHTML = 'Sorry, ' + currentActor + ' does not have a leading role in that movie. The official cast is ' + this.cast + '.';
+      // Join cast array with 'and' added where appropriate
+      if( this.cast.length == 1 ) {
+        var fullCast = this.cast[0];
+      }
+      else if ( this.cast.length == 2 ) {
+        var fullCast = this.cast.join( ' and ' );
+      }
+      else if ( this.cast.length > 2 ){
+        var fullCast = this.cast.slice(0, -1).join(', ') + ', and ' + this.cast.slice(-1);
+      }
+      this.actor.innerHTML = 'Sorry, ' + currentActor + ' does not have a leading role in that movie. The official cast is ' + fullCast + '.';
       this.newGamePrompt = document.createElement('p');
       this.newGamePrompt.className = 'lead';
       this.newGamePrompt.innerHTML = 'Want to try again? Enter a new movie and go for it!'
