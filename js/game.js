@@ -31,6 +31,9 @@ function startGame(e) {
   container.innerHTML = ''; // Remove current content
   var heading = document.createElement('h1');
   heading.innerHTML = 'Give me any movie to get started.';
+  if( twoPlayer ) {
+    heading.innerHTML = '<strong class="white-text">Player 1:</strong> ' + heading.innerHTML;
+  }
   container.appendChild(heading);
   var text = document.createElement('p');
   text.className = 'lead';
@@ -252,7 +255,18 @@ function Movie( data , isCorrect ) {
     }
     if(this.correct) {
       this.actor.innerHTML = this.randomActor + also + ' stars in this movie. Name another movie in which ' + this.randomActor + ' has a starring role.';
-    } else {
+      if( twoPlayer ) {
+        if(currentPlayer % 2 != 0 ) {
+        var player = 'Player 1';
+        }
+        else if( currentPlayer %2 == 0 ) {
+          var player = 'Player 2';
+        }
+        this.actor.innerHTML = '<strong>' + player + ':</strong> ' + this.actor.innerHTML;
+      }
+    }
+
+    else {
       this.actor.className += ' red-text';
       this.actor.innerHTML = 'Sorry, ' + currentActor + ' does not have a leading role in that movie. The official cast is ' + this.cast + '.';
       this.newGamePrompt = document.createElement('p');
@@ -269,10 +283,13 @@ function Movie( data , isCorrect ) {
       }
     }
     else {
-      this.showScore.innerHTML = 'Player 1:&nbsp;' + playerOneScore + ' Player 2:&nbsp;' + playerTwoScore;
-      if(!this.correct) {
-        this.showScore.innerHTML = '<strong>Final Scores:&nbsp;</strong>' + this.showScore.innerHTML;
+      this.showScore.innerHTML = 'Player 1:&nbsp;' + playerOneScore + '<br>Player 2:&nbsp;' + playerTwoScore;
+      if( this.correct ) {
+        var scoreState = 'Current Scores';
+      } else {
+        var scoreState = 'Final Scores';
       }
+      this.showScore.innerHTML = '<strong>' + scoreState + '</strong><br>' + this.showScore.innerHTML;
     }
   }
   this.initialize = function() {

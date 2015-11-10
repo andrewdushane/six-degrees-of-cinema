@@ -167,6 +167,12 @@ body {
 #error, .red-text {
   color: red;
 }
+.white-text {
+  color: white;
+}
+.light-grey-text {
+  color: #AAA;
+}
 
 /*
  * Footer
