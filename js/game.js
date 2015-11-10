@@ -1,7 +1,9 @@
 window.onload = function() {
 
-  var startButton = document.getElementById('start-game');
-  startButton.addEventListener( 'click' , startGame , false );
+  var onePlayerButton = document.getElementById('start-1p');
+  onePlayerButton.addEventListener( 'click' , startGame , false );
+  var twoPlayerButton = document.getElementById('start-2p');
+  twoPlayerButton.addEventListener( 'click' , startGame , false );
 
 }
 
@@ -9,16 +11,23 @@ window.onload = function() {
 var score = -1;
 var currentActor = '';
 var moviesUsed = [];
+var twoPlayer = false;
+var currentPlayer = 1; // Increment on each turn. Player 1 is odd, Player 2 even
+var playerOneScore = -1;
+var playerTwoScore = 0;
 var container = document.getElementById('movie-container');
 
 // Global error messages
-var notFound = 'We didn&rsquo;t find any movies that match your search. Try a different spelling.';
-var sameMovie = 'Looks like you&rsquo;ve already used that movie.';
-var noMovie = 'We weren&rsquo;t able to find that movie. Try a different spelling.';
-var badConnection = 'There may be a problem with your connection. Please verify you\'re connected to the internet and try again.';
+var notFound = 'I didn&rsquo;t find any movies that match your search. Try a different spelling.';
+var sameMovie = 'Looks like that movie&rsquo;s already been used.';
+var noMovie = 'I wasn&rsquo;t able to find that movie. Try a different spelling.';
+var badConnection = 'There may be a problem with your connection. Please verify you&rsquo;re connected to the internet and try again.';
 
 
-function startGame() {
+function startGame(e) {
+  if( e.target.id == 'start-2p' ) {
+    twoPlayer = true;
+  }
   container.innerHTML = ''; // Remove current content
   var heading = document.createElement('h1');
   heading.innerHTML = 'Give me any movie to get started.';
@@ -105,12 +114,21 @@ function getMovie(e) {
         }
         var newActors = data.Actors.split( ', ' );
         var isCorrect = true;
-        if( score > -1 ) {
+        if( (!twoPlayer && score > -1) || (twoPlayer && playerOneScore > -1 ) ) {
           isCorrect = checkActors(newActors);
         }
         if( isCorrect ) {
           moviesUsed.push( title );
-          score++;
+          if( !twoPlayer ) { // increment score for one player
+            score++;
+          }
+          else if ( currentPlayer % 2 != 0 ) {
+            playerOneScore++;
+          }
+          else {
+            playerTwoScore++;
+          }
+          currentPlayer++; // Switch players
           var movie = new Movie( data , isCorrect ); // Display new movie
           movie.initialize();
           movie.render();
@@ -242,6 +260,21 @@ function Movie( data , isCorrect ) {
       this.newGamePrompt.innerHTML = 'Want to try again? Enter a new movie and go for it!'
     }
   }
+  this.scoresOutput = function() {
+    if( !twoPlayer ) {
+      if(this.correct) {
+        this.showScore.innerHTML = 'Current score: ' + score;
+      } else {
+        this.showScore.innerHTML = 'Your final score was: ' + score;
+      }
+    }
+    else {
+      this.showScore.innerHTML = 'Player 1:&nbsp;' + playerOneScore + ' Player 2:&nbsp;' + playerTwoScore;
+      if(!this.correct) {
+        this.showScore.innerHTML = '<strong>Final Scores:&nbsp;</strong>' + this.showScore.innerHTML;
+      }
+    }
+  }
   this.initialize = function() {
     this.comment = document.createElement('p');
     this.comment.className = 'lead';
@@ -256,11 +289,7 @@ function Movie( data , isCorrect ) {
     this.movieInput.addEventListener( 'keyup', searchMovies, false );
     this.showScore = document.createElement('p');
     this.showScore.className = 'lead';
-    if(this.correct) {
-      this.showScore.innerHTML = 'Current score: ' + score;
-    } else {
-      this.showScore.innerHTML = 'Your final score was: ' + score;
-    }
+    this.scoresOutput();
   }
   this.render = function() {
     container.innerHTML = ''; // Empty container
@@ -316,4 +345,7 @@ function resetGame() {
   score = -1;
   currentActor = '';
   moviesUsed = [];
+  currentPlayer = 1;
+  playerOneScore = -1;
+  playerTwoScore = 0;
 }
