@@ -208,8 +208,8 @@ body {
   #movie-container {
     min-height: 442px;
     width: 100%;
-    padding: 20px 40px;
-    border: 1px solid #AAA;
+    padding: 20px;
+    border: 2px solid #AAA;
     border-radius: 5px;
     text-align: left;
     margin: 3% auto;

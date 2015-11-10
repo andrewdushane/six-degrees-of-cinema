@@ -49,9 +49,6 @@ function searchMovies(e) {
       },
       dataType: 'json',
       success: function(data) {
-        console.log('Successful searchMovies query');
-        console.log(data.Search);
-        console.log('length: ' + data.Search.length);
         if( data.hasOwnProperty('Search') ) {
           // Fetch movie directly if only one result comes back
           if( data.Search.length == 1 ) {
@@ -195,9 +192,8 @@ MovieList = function(data) {
 
 // Movie object constructor
 function Movie( data , isCorrect ) {
+  Movies.call(this, data);
   this.display = null;
-  this.title = data.Title;
-  this.posterURL = data.Poster;
   this.rating = data.tomatoMeter;
   this.correct = isCorrect;
   if(this.correct) {
@@ -207,24 +203,21 @@ function Movie( data , isCorrect ) {
   } else {
     this.cast = data.Actors;
   }
-  this.initialize = function() {
-    if(this.posterURL != 'N/A') {
-      this.img = document.createElement('img');
-      this.img.src = this.posterURL;
-    }
-    this.heading = document.createElement('h1');
-    this.heading.innerHTML = this.title;
-    this.comment = document.createElement('p');
-    this.comment.className = 'lead';
+  this.getSnarky = function() {
     if( this.rating >= 80 ) {
-      this.comment.innerHTML = 'Nice pick.';
+      return 'Nice pick.';
     }
     else if( this.rating < 80 && this.rating >= 60 ) {
-      this.comment.innerHTML = 'Decent flick.';
+      return 'Decent flick.';
     }
     else {
-      this.comment.innerHTML = 'Meh, that movie was ok.';
+      return 'Meh, that movie was ok.';
     }
+  }
+  this.initialize = function() {
+    this.comment = document.createElement('p');
+    this.comment.className = 'lead';
+    this.comment.innerHTML = this.getSnarky();
     this.actor = document.createElement('p');
     this.actor.className = 'lead';
     var also = '';
@@ -255,9 +248,7 @@ function Movie( data , isCorrect ) {
   }
   this.render = function() {
     container.innerHTML = ''; // Empty container
-    if(this.posterURL != 'N/A') {
-      container.appendChild(this.img);
-    }
+    container.appendChild(this.img);
     container.appendChild(this.heading);
     container.appendChild(this.comment);
     container.appendChild(this.actor);
@@ -270,6 +261,7 @@ function Movie( data , isCorrect ) {
     container.appendChild(this.showScore);
   }
 } // End of Movie constructor
+Movie.prototype = Object.create(Movies.prototype);
 
 // Error message constructor
 function Error( message ) {
