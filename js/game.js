@@ -196,13 +196,26 @@ function Movie( data , isCorrect ) {
   this.display = null;
   this.rating = data.tomatoMeter;
   this.correct = isCorrect;
+
+  // Pick an actor from the cast of the given movie
+  this.getRandomActor = function() {
+    var newCast = this.cast;
+    for( var i = 0; i < this.cast.length; i++ ) { // Remove current actor from array of new actors
+      if( this.cast[i] == currentActor ) {
+        newCast.splice( i, 1 );
+      }
+    }
+    return newCast[Math.floor(Math.random()*(newCast.length))]; // Pick random actor
+  } // End of getRandomActor
+
   if(this.correct) {
     this.cast = data.Actors.split( ', ');
-    this.randomActor = getRandomActor(this.cast);
+    this.randomActor = this.getRandomActor();
     currentActor = this.randomActor;
   } else {
     this.cast = data.Actors;
   }
+
   this.getSnarky = function() {
     if( this.rating >= 80 ) {
       return 'Nice pick.';
@@ -214,12 +227,7 @@ function Movie( data , isCorrect ) {
       return 'Meh, that movie was ok.';
     }
   }
-  this.initialize = function() {
-    this.comment = document.createElement('p');
-    this.comment.className = 'lead';
-    this.comment.innerHTML = this.getSnarky();
-    this.actor = document.createElement('p');
-    this.actor.className = 'lead';
+  this.textContent = function() {
     var also = '';
     if( score > 0 ) {
       also = ' also';
@@ -233,6 +241,14 @@ function Movie( data , isCorrect ) {
       this.newGamePrompt.className = 'lead';
       this.newGamePrompt.innerHTML = 'Want to try again? Enter a new movie and go for it!'
     }
+  }
+  this.initialize = function() {
+    this.comment = document.createElement('p');
+    this.comment.className = 'lead';
+    this.comment.innerHTML = this.getSnarky();
+    this.actor = document.createElement('p');
+    this.actor.className = 'lead';
+    this.textContent();
     this.movieInput = document.createElement('input');
     this.movieInput.id = "movie-search";
     this.movieInput.type = 'text';
@@ -294,17 +310,6 @@ function checkActors(actors) {
   }
   return false;
 } // End of checkActors
-
-// Pick an actor from the cast of the given movie
-function getRandomActor(cast) {
-  var newCast = cast;
-  for( var i = 0; i < cast.length; i++ ) { // Remove current actor from array of new actors
-    if( cast[i] == currentActor ) {
-      newCast.splice( i, 1 );
-    }
-  }
-  return newCast[Math.floor(Math.random()*(cast.length))]; // Pick random actor
-} // End of getRandomActor
 
 // Reset global variables to start game over
 function resetGame() {
