@@ -33,6 +33,7 @@ function startGame() {
   movieInput.placeholder = 'Enter your movie here.';
   movieInput.addEventListener( 'keyup' , searchMovies , false );
   container.appendChild(movieInput);
+  movieInput.focus();
 } // End of startGame
 
 
@@ -49,9 +50,17 @@ function searchMovies(e) {
       dataType: 'json',
       success: function(data) {
         console.log('Successful searchMovies query');
+        console.log(data.Search);
+        console.log('length: ' + data.Search.length);
         if( data.hasOwnProperty('Search') ) {
-          console.log(data.Search);
-          var movieList = new MovieList(data);
+          // Fetch movie directly if only one result comes back
+          if( data.Search.length == 1 ) {
+            var movieID = data.Search[0].imdbID;
+            getMovie(movieID);
+          } else {
+            // Show movie list if more than one result comes back
+            var movieList = new MovieList(data);
+          }
         } else {
           var notFoundError = new Error( notFound );
           notFoundError.initialize();
@@ -68,21 +77,22 @@ function searchMovies(e) {
   }
 } // End of searh movies
 
-function getMovieTemp(e) {
-  console.log('getMovieTemp event data:');
-  console.log(e);
-  console.log(e.srcElement.parentNode.id);
-}
-
 // Capture input, query OMBD, respond accordingly
 function getMovie(e) {
-  var query = e.srcElement.parentNode.id;
+  // Get id from div if movie is clicked
+  if( typeof(e) == 'object' ) {
+    var query = e.srcElement.parentNode.id;
+  }
+  // Get id from variable if direct search
+  else {
+    var query = e;
+  }
   var movieQuery = {
     url: 'http://www.omdbapi.com/?',
     type: 'GET',
     data: {
-      i: query,
-      tomatoes: 'true'
+      i: query, // Find movie by IMDB id
+      tomatoes: 'true' // Get Rotten Tomatoes rating
     },
     dataType: 'json',
     success: function(data) {
@@ -175,7 +185,7 @@ MovieList = function(data) {
     var listHeading = document.createElement('h1');
     listHeading.innerHTML = 'Which movie did you have in mind?';
     container.appendChild(listHeading);
-    for( var i = 0; i < movies.length - 1; i++ ) { //Last object in search is not a movie
+    for( var i = 0; i < movies.length; i++ ) {
       var displayMovie = new MovieListItem( movies[i] );
       displayMovie.initialize();
       displayMovie.render();
@@ -256,6 +266,7 @@ function Movie( data , isCorrect ) {
       resetGame();
     }
     container.appendChild(this.movieInput);
+    this.movieInput.focus();
     container.appendChild(this.showScore);
   }
 } // End of Movie constructor
