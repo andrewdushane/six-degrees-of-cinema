@@ -54,7 +54,7 @@ Game.startGame = function(e) {
   text.className = 'lead';
   text.innerHTML = 'Pro tip: it helps if you&rsquo;re familiar with the cast.';
   Game.container.appendChild(text);
-  movieInput = makeSearchInput();
+  movieInput = Game.makeSearchInput();
   Game.container.appendChild(movieInput);
   Game.fadeInContainer();
   movieInput.focus();
@@ -70,8 +70,28 @@ Game.resetGame = function() {
   Game.playerTwoScore = 0;
 }
 
+// Check cast of given movie for required actor
+Game.checkActors = function(actors) {
+  for( i in actors ) {
+    if( Game.currentActor == actors[i] ) {
+      return true;
+    }
+  }
+  return false;
+} // End of checkActors
+
+// Make input element for searching movies
+Game.makeSearchInput = function() {
+  var movieInput = document.createElement('input');
+  movieInput.id = "movie-search";
+  movieInput.type = 'text';
+  movieInput.placeholder = 'Enter your movie here.';
+  movieInput.addEventListener( 'keyup' , Game.searchMovies , false );
+  return movieInput;
+}
+
 // Query OMDB and get list of movies matching search
-function searchMovies(e) {
+Game.searchMovies = function(e) {
   if( e.keyCode === 13 ) {
     var query = e.target.value;
     var movieQuery = {
@@ -86,7 +106,7 @@ function searchMovies(e) {
           // Fetch movie directly if only one result comes back
           if( data.Search.length == 1 ) {
             var movieID = data.Search[0].imdbID;
-            getMovie(movieID);
+            Game.getMovie(movieID);
           } else {
             // Show movie list if more than one result comes back
             var movieList = new MovieList(data);
@@ -106,10 +126,10 @@ function searchMovies(e) {
     }
     $.ajax(movieQuery);
   }
-} // End of searh movies
+} // End of searchMovies
 
 // Capture input, query OMBD, respond accordingly
-function getMovie(e) {
+Game.getMovie = function(e) {
   // Get id from div if movie is clicked
   if( typeof(e) == 'object' ) {
     var query = e.srcElement.parentNode.id;
@@ -140,7 +160,7 @@ function getMovie(e) {
         var newActors = data.Actors.split( ', ' );
         var isCorrect = true;
         if( (!Game.twoPlayer && Game.score > -1) || (Game.twoPlayer && Game.playerOneScore > -1 ) ) {
-          isCorrect = checkActors(newActors);
+          isCorrect = Game.checkActors(newActors);
         }
         if( isCorrect ) {
           Game.moviesUsed.push(Game.playerOneScore, title );
@@ -222,7 +242,7 @@ var MovieListItem = function(movie , i) {
     }
     this.wrapper.appendChild(this.heading);
     this.wrapper.appendChild(this.date);
-    this.wrapper.addEventListener( 'click', getMovie, false );
+    this.wrapper.addEventListener( 'click', Game.getMovie, false );
     Game.container.appendChild(this.wrapper);
   }
 } // End of MovieListItem constructor
@@ -354,11 +374,7 @@ function Movie( data , isCorrect ) {
     this.actor = document.createElement('p');
     this.actor.className = 'lead';
     this.textContent();
-    this.movieInput = document.createElement('input');
-    this.movieInput.id = "movie-search";
-    this.movieInput.type = 'text';
-    this.movieInput.placeholder = 'Enter your movie here.';
-    this.movieInput.addEventListener( 'keyup', searchMovies, false );
+    this.movieInput = Game.makeSearchInput();
     this.showScore = document.createElement('p');
     this.showScore.className = 'lead';
     this.scoresOutput();
@@ -407,7 +423,7 @@ function Error( message ) {
     errorMessage.innerHTML = this.message;
     if( this.message == Errors.sameMovie ) {
       var element = Game.container.getElementsByTagName('div')[0];
-      var movieInput = makeSearchInput();
+      var movieInput = Game.makeSearchInput();
     }
     else {
       var element = document.getElementById('movie-search');
@@ -421,33 +437,13 @@ function Error( message ) {
   }
 } // End of Error constructor
 
-// Check cast of given movie for required actor
-function checkActors(actors) {
-  for( i in actors ) {
-    if( Game.currentActor == actors[i] ) {
-      return true;
-    }
-  }
-  return false;
-} // End of checkActors
-
-// Make input element for searching movies
-function makeSearchInput() {
-  var movieInput = document.createElement('input');
-  movieInput.id = "movie-search";
-  movieInput.type = 'text';
-  movieInput.placeholder = 'Enter your movie here.';
-  movieInput.addEventListener( 'keyup' , searchMovies , false );
-  return movieInput;
-}
-
 // Show and hide loading animation while waiting for AJAX response
 $(document).ajaxStart( function() {
-  $('#movie-container').hide();
-  $( "#loading" ).show();
+  $("#movie-container").hide();
+  $("#loading").show();
 })
 
 $(document).ajaxStop( function() {
-  $( "#loading" ).hide();
-  $('#movie-container').show();
+  $("#loading").hide();
+  $("#movie-container").show();
 });
