@@ -1,9 +1,12 @@
 window.onload = function() {
 
+  // Game start button listeners
   var onePlayerButton = document.getElementById('start-1p');
-  onePlayerButton.addEventListener( 'click' , startGame , false );
+  onePlayerButton.addEventListener( 'click' , Game.startGame , false );
   var twoPlayerButton = document.getElementById('start-2p');
-  twoPlayerButton.addEventListener( 'click' , startGame , false );
+  twoPlayerButton.addEventListener( 'click' , Game.startGame , false );
+
+  Game.fadeInContainer();
 
 }
 
@@ -18,16 +21,13 @@ Game.playerOneScore = -1;
 Game.playerTwoScore = 0;
 Game.difficulty = 'easy';
 Game.container = document.getElementById('movie-container');
-
-// Error messages
-var Errors = {};
-Errors.notFound = 'I didn&rsquo;t find any movies that match your search. Try a different spelling.';
-Errors.sameMovie = 'Looks like that movie&rsquo;s already been used. Pick a different movie, or try searching again.';
-Errors.noMovie = 'I wasn&rsquo;t able to find that movie. Try a different spelling.';
-Errors.badConnection = 'There may be a problem with your connection. Please verify you&rsquo;re connected to the internet and try again.';
-
-
-function startGame(e) {
+Game.fadeInContainer = function() {
+  $('#movie-container').hide();
+  $('#movie-container').velocity(
+    {opacity: 1} , {display: 'block', duration: 600}
+  );
+}
+Game.startGame = function(e) {
   if( e.target.id == 'start-2p' ) {
     Game.twoPlayer = true;
   }
@@ -52,9 +52,17 @@ function startGame(e) {
   Game.container.appendChild(text);
   movieInput = makeSearchInput();
   Game.container.appendChild(movieInput);
+  Game.fadeInContainer();
   movieInput.focus();
 } // End of startGame
 
+
+// Error messages
+var Errors = {};
+Errors.notFound = 'I didn&rsquo;t find any movies that match your search. Try a different spelling.';
+Errors.sameMovie = 'Looks like that movie&rsquo;s already been used. Pick a different movie, or try searching again.';
+Errors.noMovie = 'I wasn&rsquo;t able to find that movie. Try a different spelling.';
+Errors.badConnection = 'There may be a problem with your connection. Please verify you&rsquo;re connected to the internet and try again.';
 
 // Query OMDB and get list of movies matching search
 function searchMovies(e) {
@@ -76,6 +84,7 @@ function searchMovies(e) {
           } else {
             // Show movie list if more than one result comes back
             var movieList = new MovieList(data);
+            Game.fadeInContainer();
           }
         } else {
           var notFoundError = new Error( Errors.notFound );
@@ -142,6 +151,7 @@ function getMovie(e) {
           var movie = new Movie( data , isCorrect ); // Display new movie
           movie.initialize();
           movie.render();
+          Game.fadeInContainer();
         }
         else {
           var movie = new Movie( data , isCorrect );
@@ -436,4 +446,4 @@ $(document).ajaxStart( function() {
 $(document).ajaxStop( function() {
   $( "#loading" ).hide();
   $('#movie-container').show();
-})
+});
