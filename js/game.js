@@ -410,3 +410,14 @@ function makeSearchInput() {
   movieInput.addEventListener( 'keyup' , searchMovies , false );
   return movieInput;
 }
+
+// Show and hide loading animation while waiting for AJAX response
+$(document).ajaxStart( function() {
+  $('#movie-container').hide();
+  $( "#loading" ).show();
+})
+
+$(document).ajaxStop( function() {
+  $( "#loading" ).hide();
+  $('#movie-container').show();
+})
