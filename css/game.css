@@ -46,8 +46,15 @@ h1 {
 
 #movie-container .options label, #movie-container .options input {
   width: auto;
-  padding-left: 20px;
 }
+
+#movie-container .options span {
+  display: block;
+  width: 100%;
+  clear: both;
+  margin-top: 0.9em;
+}
+
 /*
  * Base structure
  */
@@ -219,6 +226,9 @@ body {
   color: rgba(255,255,255,.5);
 }
 
+/*
+ * Medium/Tablet breakpoint
+ */
 @media (min-width: 500px) {
   #movie-container > img {
     width: 48%;
@@ -241,7 +251,9 @@ body {
   }
 }
 
-
+/*
+ * Large/Desktop breakpoint
+ */
 @media (min-width: 800px) {
   /* Pull out the header and footer */
   .masthead-brand {
@@ -270,6 +282,13 @@ body {
   .mastfoot,
   .cover-container {
     width: 100%; /* Must be percentage or pixels for horizontal alignment */
+  }
+  #movie-container .options span {
+    display: inline;
+    width: auto;
+    clear: none;
+    margin-top: 0;
+    margin-left: 20px;
   }
   /* Single movie styles for large screen */
   #movie-container {
