@@ -21,12 +21,16 @@ Game.playerOneScore = -1;
 Game.playerTwoScore = 0;
 Game.difficulty = 'easy';
 Game.container = document.getElementById('movie-container');
+
+// Fade in container on load
 Game.fadeInContainer = function() {
   $('#movie-container').hide();
   $('#movie-container').velocity(
     {opacity: 1} , {display: 'block', duration: 600}
   );
 }
+
+// Start 1 or 2-player game with requested difficuty lvel
 Game.startGame = function(e) {
   if( e.target.id == 'start-2p' ) {
     Game.twoPlayer = true;
@@ -56,13 +60,15 @@ Game.startGame = function(e) {
   movieInput.focus();
 } // End of startGame
 
-
-// Error messages
-var Errors = {};
-Errors.notFound = 'I didn&rsquo;t find any movies that match your search. Try a different spelling.';
-Errors.sameMovie = 'Looks like that movie&rsquo;s already been used. Pick a different movie, or try searching again.';
-Errors.noMovie = 'I wasn&rsquo;t able to find that movie. Try a different spelling.';
-Errors.badConnection = 'There may be a problem with your connection. Please verify you&rsquo;re connected to the internet and try again.';
+// Reset Game variables to start game over
+Game.resetGame = function() {
+  Game.score = -1;
+  Game.currentActor = '';
+  Game.moviesUsed = [];
+  Game.currentPlayer = 1;
+  Game.playerOneScore = -1;
+  Game.playerTwoScore = 0;
+}
 
 // Query OMDB and get list of movies matching search
 function searchMovies(e) {
@@ -366,7 +372,7 @@ function Movie( data , isCorrect ) {
     Game.container.appendChild(this.actor);
     if(!(this.correct)) {
       Game.container.appendChild(this.newGamePrompt);
-      resetGame();
+      Game.resetGame();
     }
     Game.container.appendChild(this.movieInput);
     this.movieInput.focus();
@@ -375,6 +381,13 @@ function Movie( data , isCorrect ) {
 
 } // End of Movie constructor
 Movie.prototype = Object.create(Movies.prototype);
+
+// Error messages
+var Errors = {};
+Errors.notFound = 'I didn&rsquo;t find any movies that match your search. Try a different spelling.';
+Errors.sameMovie = 'Looks like that movie&rsquo;s already been used. Pick a different movie, or try searching again.';
+Errors.noMovie = 'I wasn&rsquo;t able to find that movie. Try a different spelling.';
+Errors.badConnection = 'There may be a problem with your connection. Please verify you&rsquo;re connected to the internet and try again.';
 
 // Error message constructor
 function Error( message ) {
@@ -404,6 +417,7 @@ function Error( message ) {
     if( movieInput != undefined ) {
       parent.insertBefore( movieInput, element );
     }
+    Game.fadeInContainer();
   }
 } // End of Error constructor
 
@@ -416,16 +430,6 @@ function checkActors(actors) {
   }
   return false;
 } // End of checkActors
-
-// Reset global variables to start game over
-function resetGame() {
-  Game.score = -1;
-  Game.currentActor = '';
-  Game.moviesUsed = [];
-  Game.currentPlayer = 1;
-  Game.playerOneScore = -1;
-  Game.playerTwoScore = 0;
-}
 
 // Make input element for searching movies
 function makeSearchInput() {
