@@ -245,7 +245,12 @@ function Movie( data , isCorrect ) {
         newCast.splice( i, 1 );
       }
     }
-    return newCast[Math.floor(Math.random()*(newCast.length))]; // Pick random actor
+    if ( Game.difficulty == 'hard' ) { // Pick from full cast
+      return newCast[Math.floor(Math.random()*(newCast.length))]; // Pick random actor
+    }
+    else { // Pick from first two actors
+      return newCast[Math.floor(Math.random()*(2))];
+    }
   } // End of getRandomActor
 
   this.cast = data.Actors.split( ', ');
