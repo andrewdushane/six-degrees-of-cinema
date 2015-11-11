@@ -8,39 +8,42 @@ window.onload = function() {
 }
 
 // Global variables
-var score = -1;
-var currentActor = '';
-var moviesUsed = [];
-var twoPlayer = false;
-var currentPlayer = 1; // Increment on each turn. Player 1 is odd, Player 2 even
-var playerOneScore = -1;
-var playerTwoScore = 0;
-var container = document.getElementById('movie-container');
+var Game = {};
+Game.score = -1;
+Game.currentActor = '';
+Game.moviesUsed = [];
+Game.twoPlayer = false;
+Game.currentPlayer = 1; // Increment on each turn. Player 1 is odd, Player 2 even
+Game.playerOneScore = -1;
+Game.playerTwoScore = 0;
+Game.difficulty = 'easy';
+Game.container = document.getElementById('movie-container');
 
-// Global error messages
-var notFound = 'I didn&rsquo;t find any movies that match your search. Try a different spelling.';
-var sameMovie = 'Looks like that movie&rsquo;s already been used. Pick a different movie, or try searching again.';
-var noMovie = 'I wasn&rsquo;t able to find that movie. Try a different spelling.';
-var badConnection = 'There may be a problem with your connection. Please verify you&rsquo;re connected to the internet and try again.';
+// Error messages
+var Errors = {};
+Errors.notFound = 'I didn&rsquo;t find any movies that match your search. Try a different spelling.';
+Errors.sameMovie = 'Looks like that movie&rsquo;s already been used. Pick a different movie, or try searching again.';
+Errors.noMovie = 'I wasn&rsquo;t able to find that movie. Try a different spelling.';
+Errors.badConnection = 'There may be a problem with your connection. Please verify you&rsquo;re connected to the internet and try again.';
 
 
 function startGame(e) {
   if( e.target.id == 'start-2p' ) {
-    twoPlayer = true;
+    Game.twoPlayer = true;
   }
-  container.innerHTML = ''; // Remove current content
+  Game.container.innerHTML = ''; // Remove current content
   var heading = document.createElement('h1');
   heading.innerHTML = 'Give me any movie to get started.';
-  if( twoPlayer ) {
+  if( Game.twoPlayer ) {
     heading.innerHTML = '<strong class="white-text">Player 1:</strong> ' + heading.innerHTML;
   }
-  container.appendChild(heading);
+  Game.container.appendChild(heading);
   var text = document.createElement('p');
   text.className = 'lead';
   text.innerHTML = 'Pro tip: it helps if you&rsquo;re familiar with the cast.';
-  container.appendChild(text);
+  Game.container.appendChild(text);
   movieInput = makeSearchInput();
-  container.appendChild(movieInput);
+  Game.container.appendChild(movieInput);
   movieInput.focus();
 } // End of startGame
 
@@ -67,13 +70,13 @@ function searchMovies(e) {
             var movieList = new MovieList(data);
           }
         } else {
-          var notFoundError = new Error( notFound );
+          var notFoundError = new Error( Errors.notFound );
           notFoundError.initialize();
           notFoundError.render();
         }
       },
       error: function(data) {
-        var notFoundError = new Error( notFound );
+        var notFoundError = new Error( Errors.notFound );
         notFoundError.initialize();
         notFoundError.render();
       }
@@ -103,9 +106,9 @@ function getMovie(e) {
     success: function(data) {
       if( data.Response == 'True' ) {
         var title = data.Title;
-        for( i in moviesUsed ) {
-          if ( data.Title == moviesUsed[i] ) {
-            var sameMovieError = new Error( sameMovie );
+        for( i in Game.moviesUsed ) {
+          if ( data.Title == Game.moviesUsed[i] ) {
+            var sameMovieError = new Error( Errors.sameMovie );
             sameMovieError.initialize();
             sameMovieError.render();
             return;
@@ -113,21 +116,21 @@ function getMovie(e) {
         }
         var newActors = data.Actors.split( ', ' );
         var isCorrect = true;
-        if( (!twoPlayer && score > -1) || (twoPlayer && playerOneScore > -1 ) ) {
+        if( (!Game.twoPlayer && Game.score > -1) || (Game.twoPlayer && Game.playerOneScore > -1 ) ) {
           isCorrect = checkActors(newActors);
         }
         if( isCorrect ) {
-          moviesUsed.push( title );
-          if( !twoPlayer ) { // increment score for one player
-            score++;
+          Game.moviesUsed.push(Game.playerOneScore, title );
+          if( !Game.twoPlayer ) { // increment score for one player
+            Game.score++;
           }
-          else if ( currentPlayer % 2 != 0 ) {
-            playerOneScore++;
+          else if ( Game.currentPlayer % 2 != 0 ) {
+            Game.playerOneScore++;
           }
           else {
-            playerTwoScore++;
+            Game.playerTwoScore++;
           }
-          currentPlayer++; // Switch players
+          Game.currentPlayer++; // Switch players
           var movie = new Movie( data , isCorrect ); // Display new movie
           movie.initialize();
           movie.render();
@@ -139,13 +142,13 @@ function getMovie(e) {
         }
       }
       else {
-        var noMovieError = new Error( noMovie );
+        var noMovieError = new Error( Game.noMovie );
         notFoundError.initialize();
         notFoundError.render();
       }
     },
     error: function(data) {
-      var connectionError = new Error( badConnection );
+      var connectionError = new Error( Errors.badConnection );
       connectionError.initialize();
       connectionError.render();
     }
@@ -196,7 +199,7 @@ var MovieListItem = function(movie , i) {
     this.wrapper.appendChild(this.heading);
     this.wrapper.appendChild(this.date);
     this.wrapper.addEventListener( 'click', getMovie, false );
-    container.appendChild(this.wrapper);
+    Game.container.appendChild(this.wrapper);
   }
 } // End of MovieListItem constructor
 MovieListItem.prototype = Object.create(Movies.prototype); // MovieListItem extends Movies
@@ -206,11 +209,11 @@ MovieListItem.prototype = Object.create(Movies.prototype); // MovieListItem exte
 MovieList = function(data) {
   if(data.hasOwnProperty('Search')) {
     var movies = data.Search;
-    container.innerHTML = '';
+    Game.container.innerHTML = '';
     var listHeading = document.createElement('h1');
     listHeading.id = 'movie-list-title';
     listHeading.innerHTML = 'Which movie did you have in mind?';
-    container.appendChild(listHeading);
+    Game.container.appendChild(listHeading);
     for( var i = 0; i < movies.length; i++ ) {
       var displayMovie = new MovieListItem( movies[i] , i );
       displayMovie.initialize();
@@ -230,7 +233,7 @@ function Movie( data , isCorrect ) {
   this.getRandomActor = function() {
     var newCast = this.cast;
     for( var i = 0; i < this.cast.length; i++ ) { // Remove current actor from array of new actors
-      if( this.cast[i] == currentActor ) {
+      if( this.cast[i] == Game.currentActor ) {
         newCast.splice( i, 1 );
       }
     }
@@ -240,7 +243,7 @@ function Movie( data , isCorrect ) {
   this.cast = data.Actors.split( ', ');
   if(this.correct) {
     this.randomActor = this.getRandomActor();
-    currentActor = this.randomActor;
+    Game.currentActor = this.randomActor;
   }
 
   // Comment on given movie based on Rotten Tomatoes rating
@@ -262,16 +265,16 @@ function Movie( data , isCorrect ) {
 
   this.textContent = function() {
     var also = '';
-    if( score > 0 ) {
+    if( Game.score > 0 ) {
       also = ' also';
     }
     if(this.correct) {
       this.actor.innerHTML = this.randomActor + also + ' stars in this movie. Name another movie in which ' + this.randomActor + ' has a starring role.';
-      if( twoPlayer ) {
-        if(currentPlayer % 2 != 0 ) {
+      if( Game.twoPlayer ) {
+        if(Game.currentPlayer % 2 != 0 ) {
         var player = 'Player 1';
         }
-        else if( currentPlayer %2 == 0 ) {
+        else if( Game.currentPlayer %2 == 0 ) {
           var player = 'Player 2';
         }
         this.actor.innerHTML = '<strong>' + player + ':</strong> ' + this.actor.innerHTML;
@@ -289,7 +292,7 @@ function Movie( data , isCorrect ) {
       else if ( this.cast.length > 2 ){
         var fullCast = this.cast.slice(0, -1).join(', ') + ', and ' + this.cast.slice(-1);
       }
-      this.actor.innerHTML = 'Sorry, ' + currentActor + ' does not have a leading role in that movie. The official cast is ' + fullCast + '.';
+      this.actor.innerHTML = 'Sorry, ' + Game.currentActor + ' does not have a leading role in that movie. The official cast is ' + fullCast + '.';
       this.newGamePrompt = document.createElement('p');
       this.newGamePrompt.className = 'lead';
       this.newGamePrompt.innerHTML = 'Want to try again? Enter a new movie and go for it!'
@@ -297,15 +300,15 @@ function Movie( data , isCorrect ) {
   } // end of textContent
 
   this.scoresOutput = function() {
-    if( !twoPlayer ) {
+    if( !Game.twoPlayer ) {
       if(this.correct) {
-        this.showScore.innerHTML = 'Current score: ' + score;
+        this.showScore.innerHTML = 'Current score: ' + Game.score;
       } else {
-        this.showScore.innerHTML = 'Your final score was: ' + score;
+        this.showScore.innerHTML = 'Your final score was: ' + Game.score;
       }
     }
     else {
-      this.showScore.innerHTML = '<span class="light-grey-text">Player 1:</span>&nbsp;' + playerOneScore + '<br><span class="light-grey-text">Player 2:</span>&nbsp;' + playerTwoScore;
+      this.showScore.innerHTML = '<span class="light-grey-text">Player 1:</span>&nbsp;' + Game.playerOneScore + '<br><span class="light-grey-text">Player 2:</span>&nbsp;' + Game.playerTwoScore;
       if( this.correct ) {
         var scoreState = 'Current Scores';
       } else {
@@ -333,18 +336,18 @@ function Movie( data , isCorrect ) {
   } // End of initliaze
 
   this.render = function() {
-    container.innerHTML = ''; // Empty container
-    container.appendChild(this.img);
-    container.appendChild(this.heading);
-    container.appendChild(this.comment);
-    container.appendChild(this.actor);
+    Game.container.innerHTML = ''; // Empty container
+    Game.container.appendChild(this.img);
+    Game.container.appendChild(this.heading);
+    Game.container.appendChild(this.comment);
+    Game.container.appendChild(this.actor);
     if(!(this.correct)) {
-      container.appendChild(this.newGamePrompt);
+      Game.container.appendChild(this.newGamePrompt);
       resetGame();
     }
-    container.appendChild(this.movieInput);
+    Game.container.appendChild(this.movieInput);
     this.movieInput.focus();
-    container.appendChild(this.showScore);
+    Game.container.appendChild(this.showScore);
   } // End of render
 
 } // End of Movie constructor
@@ -366,8 +369,8 @@ function Error( message ) {
       var errorMessage = document.getElementById('error');
     }
     errorMessage.innerHTML = this.message;
-    if( this.message == sameMovie ) {
-      var element = container.getElementsByTagName('div')[0];
+    if( this.message == Errors.sameMovie ) {
+      var element = Game.container.getElementsByTagName('div')[0];
       var movieInput = makeSearchInput();
     }
     else {
@@ -384,7 +387,7 @@ function Error( message ) {
 // Check cast of given movie for required actor
 function checkActors(actors) {
   for( i in actors ) {
-    if( currentActor == actors[i] ) {
+    if( Game.currentActor == actors[i] ) {
       return true;
     }
   }
@@ -393,12 +396,12 @@ function checkActors(actors) {
 
 // Reset global variables to start game over
 function resetGame() {
-  score = -1;
-  currentActor = '';
-  moviesUsed = [];
-  currentPlayer = 1;
-  playerOneScore = -1;
-  playerTwoScore = 0;
+  Game.score = -1;
+  Game.currentActor = '';
+  Game.moviesUsed = [];
+  Game.currentPlayer = 1;
+  Game.playerOneScore = -1;
+  Game.playerTwoScore = 0;
 }
 
 // Make input element for searching movies
