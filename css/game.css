@@ -270,10 +270,13 @@ body {
     position: fixed;
     top: 0;
   }
+
+  /* Fix footer to bottom of page
+   * Overlays content when taller than viewport
   .mastfoot {
     position: fixed;
     bottom: 0;
-  }
+  }*/
   /* Start the vertical centering */
   .site-wrapper-inner {
     vertical-align: middle;
