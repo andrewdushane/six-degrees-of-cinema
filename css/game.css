@@ -43,6 +43,11 @@ h1 {
 .h1, .h2, .h3, h1, h2, h3 {
     margin-top: 0;
 }
+
+#movie-container .options label, #movie-container .options input {
+  width: auto;
+  padding-left: 20px;
+}
 /*
  * Base structure
  */

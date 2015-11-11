@@ -7,7 +7,7 @@ window.onload = function() {
 
 }
 
-// Global variables
+// Global Game variables
 var Game = {};
 Game.score = -1;
 Game.currentActor = '';
@@ -30,6 +30,14 @@ Errors.badConnection = 'There may be a problem with your connection. Please veri
 function startGame(e) {
   if( e.target.id == 'start-2p' ) {
     Game.twoPlayer = true;
+  }
+  // Set difficulty level
+  var radios = document.getElementsByName('difficulty');
+  for (var i = 0, length = radios.length; i < length; i++) {
+    if (radios[i].checked) {
+      Game.difficulty = radios[i].value;
+      break;
+    }
   }
   Game.container.innerHTML = ''; // Remove current content
   var heading = document.createElement('h1');
