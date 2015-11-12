@@ -34,6 +34,7 @@ Game.fadeInContainer = function() {
         if(search != null) { // Focus on search input if it is on the page
           search.focus();
         }
+        $('movie-search').velocity("callout.shake");
       }
     }
   );
@@ -277,9 +278,31 @@ MovieList = function(data) {
 // Movie object constructor
 function Movie( data , isCorrect ) {
   Movies.call(this, data);
+  this.awards = data.Awards;
+  console.log(this.awards);
   this.display = null;
   this.rating = data.tomatoMeter;
   this.correct = isCorrect;
+  this.cast = data.Actors.split( ', ');
+
+  // Create text that tells how many Oscars the movie won
+  this.createAwardsText = function() {
+    var output = '';
+    if( this.awards.search( /Oscar/ ) != -1 ) {
+      output = this.awards.split('. ')[0].split(' ');
+      // output = output.split(' ');
+      output[0] = output[0].toLowerCase();
+      output = output.join(' ');
+      var was = '';
+      if(output.search(/nominated/) != -1) {
+        was = 'was '
+      }
+      output = ' Did you know this movie ' + was + output + '?';
+    }
+    return output;
+  }
+  this.awardsText = this.createAwardsText();
+
 
   // Pick an actor from the cast of the given movie
   this.getRandomActor = function() {
@@ -297,7 +320,6 @@ function Movie( data , isCorrect ) {
     }
   } // End of getRandomActor
 
-  this.cast = data.Actors.split( ', ');
   if(this.correct) {
     this.randomActor = this.getRandomActor();
     Game.currentActor = this.randomActor;
@@ -379,6 +401,7 @@ function Movie( data , isCorrect ) {
     this.comment = document.createElement('p');
     this.comment.className = 'lead';
     this.comment.innerHTML = this.getSnarky();
+    this.comment.innerHTML += this.createAwardsText();
     this.actor = document.createElement('p');
     this.actor.className = 'lead';
     this.textContent();
