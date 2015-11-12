@@ -26,7 +26,16 @@ Game.container = document.getElementById('movie-container');
 Game.fadeInContainer = function() {
   $('#movie-container').hide();
   $('#movie-container').velocity(
-    {opacity: 1} , {display: 'block', duration: 600}
+    {opacity: 1} , { // Velocity options
+      display: 'block',
+      duration: 600,
+      complete: function() {
+        var search = document.getElementById('movie-search');
+        if(search != null) { // Focus on search input if it is on the page
+          search.focus();
+        }
+      }
+    }
   );
 }
 
@@ -57,7 +66,6 @@ Game.startGame = function(e) {
   movieInput = Game.makeSearchInput();
   Game.container.appendChild(movieInput);
   Game.fadeInContainer();
-  movieInput.focus();
 } // End of startGame
 
 // Reset Game variables to start game over
@@ -391,7 +399,6 @@ function Movie( data , isCorrect ) {
       Game.resetGame();
     }
     Game.container.appendChild(this.movieInput);
-    this.movieInput.focus();
     Game.container.appendChild(this.showScore);
   } // End of render
 
