@@ -94,16 +94,12 @@ Game.checkActors = function(actors) {
 
 // Make input element for searching movies
 Game.makeSearchInput = function() {
-  var searchExists = document.getElementById('movie-search');
-  if( !searchExists ) {
-    var movieInput = document.createElement('input');
-    movieInput.id = "movie-search";
-    movieInput.type = 'text';
-    movieInput.placeholder = 'Enter your movie here.';
-    movieInput.addEventListener( 'keyup' , Game.searchMovies , false );
-    return movieInput;
-  }
-  else return false;
+  var movieInput = document.createElement('input');
+  movieInput.id = "movie-search";
+  movieInput.type = 'text';
+  movieInput.placeholder = 'Enter your movie here.';
+  movieInput.addEventListener( 'keyup' , Game.searchMovies , false );
+  return movieInput;
 }
 
 // Query OMDB and get list of movies matching search
@@ -479,7 +475,8 @@ function Error( message ) {
     }
     var parent = element.parentNode;
     parent.insertBefore( errorMessage , element );
-    if( movieInput ) {
+    var searchExists = document.getElementById('movie-search');
+    if( !searchExists && movieInput ) {
       parent.insertBefore( movieInput, element );
     }
     Game.fadeInContainer();
