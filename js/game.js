@@ -404,7 +404,7 @@ function Movie( data , isCorrect ) {
 
   this.encouragement = function() {
     var messages = ['You&rsquo;re doing an amazing job!', 'Wow, you&rsquo;re good at this!', 'You work in Hollywood, don&rsquo;t you.', 'You should be on Jeopardy!']
-    if( Game.score != 0 && Game.score % 3 == 0 && this.correct ) { // Every third point
+    if( Game.score != 0 && Game.score % 2 == 0 && this.correct ) { // Every two points
       var youRock = document.createElement('p');
       youRock.className = 'lead';
       youRock.id = 'encouragement';
