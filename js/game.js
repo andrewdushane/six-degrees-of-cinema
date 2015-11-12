@@ -34,7 +34,6 @@ Game.fadeInContainer = function() {
         if(search != null) { // Focus on search input if it is on the page
           search.focus();
         }
-        $('movie-search').velocity("callout.shake");
       }
     }
   );
@@ -463,6 +462,7 @@ function Error( message ) {
       parent.insertBefore( movieInput, element );
     }
     Game.fadeInContainer();
+    $('#movie-search').velocity("callout.shake", { delay: 200 });
   }
 } // End of Error constructor
 
