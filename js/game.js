@@ -34,6 +34,10 @@ Game.fadeInContainer = function() {
         if(search != null) { // Focus on search input if it is on the page
           search.focus();
         }
+        var encouragement = document.getElementById('encouragement');
+        if (encouragement != null ) {
+          $('#encouragement').velocity('callout.pulse');
+        }
       }
     }
   );
@@ -398,6 +402,18 @@ function Movie( data , isCorrect ) {
     }
   } // End of scoresOutput
 
+  this.encouragement = function() {
+    var messages = ['You&rsquo;re doing an amazing job!', 'Wow, you&rsquo;re good at this!', 'You work in Hollywood, don&rsquo;t you.', 'You should be on Jeopardy!']
+    if( Game.score != 0 && Game.score % 3 == 0 && this.correct ) { // Every third point
+      var youRock = document.createElement('p');
+      youRock.className = 'lead';
+      youRock.id = 'encouragement';
+      youRock.innerHTML = messages[Math.floor(Math.random() * messages.length)];
+      Game.container.appendChild(youRock);
+    }
+    else return false;
+  }
+
   this.initialize = function() {
     this.comment = document.createElement('p');
     this.comment.className = 'lead';
@@ -416,6 +432,7 @@ function Movie( data , isCorrect ) {
     Game.container.innerHTML = ''; // Empty container
     Game.container.appendChild(this.img);
     Game.container.appendChild(this.heading);
+    this.encouragement();
     Game.container.appendChild(this.comment);
     Game.container.appendChild(this.actor);
     if(!(this.correct)) {
