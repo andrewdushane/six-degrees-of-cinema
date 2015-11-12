@@ -279,7 +279,6 @@ MovieList = function(data) {
 function Movie( data , isCorrect ) {
   Movies.call(this, data);
   this.awards = data.Awards;
-  console.log(this.awards);
   this.display = null;
   this.rating = data.tomatoMeter;
   this.correct = isCorrect;
@@ -289,12 +288,11 @@ function Movie( data , isCorrect ) {
   this.createAwardsText = function() {
     var output = '';
     if( this.awards.search( /Oscar/ ) != -1 ) {
-      output = this.awards.split('. ')[0].split(' ');
-      // output = output.split(' ');
+      output = this.awards.split('. ')[0].split(' '); // Get the first sentence and split the words
       output[0] = output[0].toLowerCase();
       output = output.join(' ');
       var was = '';
-      if(output.search(/nominated/) != -1) {
+      if(output.search(/nominated/) != -1) { // Add "was" if movie was nominated
         was = 'was '
       }
       output = ' Did you know this movie ' + was + output + '?';
@@ -331,13 +329,13 @@ function Movie( data , isCorrect ) {
       var comments = ['Classic!', 'Great film.', 'Excellent.'];
     }
     else if( this.rating < 93 && this.rating >= 75 ) {
-      var comments = ['Nice pick.', 'Good movie.', 'That&rsquo;ll work.'];
+      var comments = ['Nice pick.', 'Good flick.', 'That&rsquo;ll work.'];
     }
     else if( this.rating < 80 && this.rating >= 55 ) {
-      var comments = ['Decent flick.', 'Not horrible.', 'Please don&rsquo;t Netflix and Chill with that movie.'];
+      var comments = ['Decent picture.', 'Not horrible.', 'Please don&rsquo;t Netflix and Chill with that movie.'];
     }
     else {
-      var comments = ['Meh, that movie was ok.', 'Did you enjoy that movie?', 'That is, technically, a movie.'];
+      var comments = ['Meh, that movie was ok.', 'So, did you like that movie?', 'That is, technically, a movie.'];
     }
     return comments[Math.floor(Math.random()*3)]
   } // End of getSnarky
@@ -454,6 +452,7 @@ function Error( message ) {
     if( this.message == Errors.sameMovie ) {
       var element = Game.container.getElementsByTagName('div')[0];
       var movieInput = Game.makeSearchInput();
+      movieInput.className = 'full-search';
     }
     else {
       var element = document.getElementById('movie-search');

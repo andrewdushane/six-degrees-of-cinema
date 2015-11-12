@@ -205,7 +205,7 @@ body {
   width: 100%;
   margin-bottom: 5px;
 }
-#movie-container input {
+#movie-container input, #movie-container input.full-search {
   width: 100%;
 }
 #error, .red-text {
