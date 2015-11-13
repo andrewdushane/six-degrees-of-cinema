@@ -14,5 +14,7 @@ Six Degrees of Cinema is a fun and simple movie trivia game. Name one of your fa
 This game can be played by one or two players. If you choose two-player mode, you and your competition will take turns naming movies for the actors I select.
 
 #### Potential Upgrades
+* Back button
 * Give option to select naming movies or naming actors
-* Find/use database with full cast information
+* Store full cast lists locally for better correctness checking
+* Fetch or store locally actor images and show when prompting for a movie pick
