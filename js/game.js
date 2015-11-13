@@ -107,7 +107,7 @@ Game.searchMovies = function(e) {
   if( e.keyCode === 13 ) {
     var query = e.target.value;
     var movieQuery = {
-      url: 'http://www.omdbapi.com/?',
+      url: 'http://www.omdbapi.com/',
       type: 'GET',
       data: {
         s: query
@@ -151,7 +151,7 @@ Game.getMovie = function(e) {
     var query = e;
   }
   var movieQuery = {
-    url: 'http://www.omdbapi.com/?',
+    url: 'http://www.omdbapi.com/',
     type: 'GET',
     data: {
       i: query, // Find movie by IMDB id
@@ -212,14 +212,14 @@ Game.getMovie = function(e) {
   $.ajax(movieQuery);
 } // End of getMovie
 
-
 // Movies parent class constructor
 var Movies = function(movie) {
   this.title = movie.Title;
   this.posterURL = movie.Poster;
   this.img = document.createElement('img');
+  this.movieID = movie.imdbID;
   if(this.posterURL != 'N/A') {
-    this.img.src = this.posterURL;
+    this.img.src = 'http://img.omdbapi.com/?apikey=d31f1a94&i=' + this.movieID + '&h=1000';
   } else {
     this.img.src = 'images/no-poster-available.png'
   }
