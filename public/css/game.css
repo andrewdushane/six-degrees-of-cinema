@@ -243,6 +243,9 @@ body {
   #movie-container input {
     width: 50%;
   }
+  #movie-container .movie-info input {
+    width: 100%;
+  }
   #movie-container div {
     width: 49%;
     float: left;
