@@ -221,7 +221,7 @@ var Movies = function(movie) {
   if(this.posterURL != 'N/A') {
     this.img.src = 'http://img.omdbapi.com/?apikey=d31f1a94&i=' + this.movieID + '&h=1000';
   } else {
-    this.img.src = 'images/no-poster-available.png'
+    this.img.src = '/images/no-poster-available.png'
   }
   this.heading = document.createElement('h1');
   this.heading.innerHTML = this.title;
