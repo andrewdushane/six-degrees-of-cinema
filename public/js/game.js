@@ -411,6 +411,8 @@ function Movie( data , isCorrect ) {
   }
 
   this.initialize = function() {
+    this.container = document.createElement('section');
+    this.container.className = 'movie-info';
     this.comment = document.createElement('p');
     this.comment.className = 'lead';
     this.comment.innerHTML = this.getSnarky();
@@ -422,21 +424,24 @@ function Movie( data , isCorrect ) {
     this.showScore = document.createElement('p');
     this.showScore.className = 'lead';
     this.scoresOutput();
+    this.img.className = 'single-movie';
   } // End of initliaze
 
   this.render = function() {
     Game.container.innerHTML = ''; // Empty container
-    Game.container.appendChild(this.img);
-    Game.container.appendChild(this.heading);
+    this.container.innerHTML = '';
+    this.container.appendChild(this.heading);
     this.encouragement();
-    Game.container.appendChild(this.comment);
-    Game.container.appendChild(this.actor);
+    this.container.appendChild(this.comment);
+    this.container.appendChild(this.actor);
     if(!(this.correct)) {
-      Game.container.appendChild(this.newGamePrompt);
+      this.container.appendChild(this.newGamePrompt);
       Game.resetGame();
     }
-    Game.container.appendChild(this.movieInput);
-    Game.container.appendChild(this.showScore);
+    this.container.appendChild(this.movieInput);
+    this.container.appendChild(this.showScore);
+    Game.container.appendChild(this.container);
+    Game.container.appendChild(this.img);
   } // End of render
 
 } // End of Movie constructor

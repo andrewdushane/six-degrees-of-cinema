@@ -225,12 +225,16 @@ body {
 .mastfoot {
   color: #999; /* IE8 proofing */
   color: rgba(255,255,255,.5);
+  clear: both;
 }
 
 /*
  * Medium/Tablet breakpoint
  */
-@media (min-width: 500px) {
+@media (min-width: 600px) {
+  #movie-container {
+    clear: both;
+  }
   #movie-container > img {
     width: 48%;
     margin-right: 2%;
@@ -249,6 +253,11 @@ body {
   }
   #movie-container div img {
     height: auto;
+  }
+  .movie-info {
+    display: inline-block;
+    float: right;
+    width: 50%;
   }
 }
 
@@ -307,6 +316,14 @@ body {
     width: auto;
     height: 400px;
     margin-right: 20px;
+  }
+  #movie-container .single-movie {
+    width: 37%;
+    margin-right: 3%;
+    height: auto;
+  }
+  .movie-info {
+    width: 60%;
   }
   #movie-container input {
     width: 50%;
