@@ -1,5 +1,3 @@
-require 'HTTParty'
-
 class Query
 
   def fetch_movie params
