@@ -107,9 +107,10 @@ Game.searchMovies = function(e) {
   if( e.keyCode === 13 ) {
     var query = e.target.value;
     var movieQuery = {
-      url: 'http://www.omdbapi.com/',
+      url: '/movie',
       type: 'GET',
       data: {
+        searchType: 'list',
         s: query
       },
       dataType: 'json',
@@ -151,11 +152,11 @@ Game.getMovie = function(e) {
     var query = e;
   }
   var movieQuery = {
-    url: 'http://www.omdbapi.com/',
+    url: '/movie',
     type: 'GET',
     data: {
+      searchType: 'single',
       i: query, // Find movie by IMDB id
-      tomatoes: 'true' // Get Rotten Tomatoes rating
     },
     dataType: 'json',
     success: function(data) {
@@ -405,7 +406,7 @@ function Movie( data , isCorrect ) {
       youRock.className = 'lead';
       youRock.id = 'encouragement';
       youRock.innerHTML = messages[Math.floor(Math.random() * messages.length)];
-      Game.container.appendChild(youRock);
+      this.container.appendChild(youRock);
     }
     else return false;
   }
