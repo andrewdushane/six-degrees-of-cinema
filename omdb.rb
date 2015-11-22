@@ -1,3 +1,5 @@
+require 'uri'
+
 class Query
 
   def fetch_movie params
@@ -10,6 +12,7 @@ class Query
       @url = false
     end
     if @url
+      @url = URI.parse(URI.encode(@url))
       @results = HTTParty.get(@url)
     end
     return @results.to_json
